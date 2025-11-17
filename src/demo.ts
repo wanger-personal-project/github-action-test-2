@@ -40,13 +40,13 @@ console.log(`   UUID: ${StringUtils.generateUUID()}`);
 console.log(`   UUID: ${StringUtils.generateUUID()}`);
 
 console.log('\n5️⃣ 回文检测:');
-console.log(`   "racecar" 是回文? ${StringUtils.isPalindrome('racecar')}`);
-console.log(`   "hello" 是回文? ${StringUtils.isPalindrome('hello')}`);
+console.log(`   "racecar" 是回文? ${String(StringUtils.isPalindrome('racecar'))}`);
+console.log(`   "hello" 是回文? ${String(StringUtils.isPalindrome('hello'))}`);
 
 console.log('\n6️⃣ 子串计数:');
 const text = 'GitHub Actions is awesome, Actions rocks!';
 console.log(`   文本: "${text}"`);
-console.log(`   "Actions" 出现次数: ${StringUtils.countOccurrences(text, 'Actions')}`);
+console.log(`   "Actions" 出现次数: ${String(StringUtils.countOccurrences(text, 'Actions'))}`);
 
 // ============ 数组工具演示 ============
 console.log('\n\n📊 数组处理工具');
@@ -97,10 +97,10 @@ console.log(`   差集: [${ArrayUtils.difference(arr1, arr2).join(', ')}]`);
 console.log('\n7️⃣ 数学运算:');
 const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 console.log(`   数组: [${nums.join(', ')}]`);
-console.log(`   求和: ${ArrayUtils.sum(nums)}`);
-console.log(`   平均值: ${ArrayUtils.average(nums)}`);
-console.log(`   最大值: ${ArrayUtils.max(nums)}`);
-console.log(`   最小值: ${ArrayUtils.min(nums)}`);
+console.log(`   求和: ${String(ArrayUtils.sum(nums))}`);
+console.log(`   平均值: ${String(ArrayUtils.average(nums))}`);
+console.log(`   最大值: ${String(ArrayUtils.max(nums))}`);
+console.log(`   最小值: ${String(ArrayUtils.min(nums))}`);
 
 console.log('\n8️⃣ 移除假值:');
 const mixed = [0, 1, false, 2, '', 3, null, undefined, 4];

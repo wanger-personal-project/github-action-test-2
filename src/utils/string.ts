@@ -91,7 +91,17 @@ export function template(
 ): string {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => {
     const value = data[key];
-    return value !== undefined ? String(value) : '';
+    if (value === undefined || value === null) return '';
+
+    // Handle different types explicitly
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number') return String(value);
+    if (typeof value === 'boolean') return String(value);
+    if (typeof value === 'bigint') return String(value);
+    if (typeof value === 'symbol') return value.toString();
+
+    // For objects and arrays
+    return JSON.stringify(value);
   });
 }
 
