@@ -2,7 +2,7 @@ import React from 'react'
 
 const config = {
   footer: <p>© 2025 我的技术博客</p>,
-  head: ({ title, meta }) => (
+  head: ({ title, meta }: { title: string; meta: Record<string, any> }) => (
     <>
       {meta.description && (
         <meta name="description" content={meta.description} />
