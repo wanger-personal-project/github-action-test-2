@@ -1,37 +1,18 @@
-# GitHub Actions 学习项目
+# 我的 Nextra 技术博客
 
-一个用于学习 GitHub Actions 的 TypeScript 工具项目，包含字符串和数组处理工具，配置了完整的 CI/CD 流程。
+基于 Next.js 和 Nextra 构建的个人技术博客，支持自动化部署到 Vercel。
 
-## 项目特点
+## 功能特性
 
-- ✅ **TypeScript 工具库**：包含实用的字符串和数组处理函数
-- ✅ **单元测试**：使用 Vitest 进行测试，覆盖所有工具函数
-- ✅ **代码规范**：使用 ESLint + TypeScript 严格检查
-- ✅ **GitHub Actions CI**：自动运行 lint、测试、构建和自定义脚本
-- ✅ **演示脚本**：展示所有工具函数的使用效果
-
-## 项目结构
-
-```
-github-action-test-2/
-├── .github/
-│   └── workflows/
-│       └── ci.yml              # GitHub Actions CI 配置
-├── src/
-│   ├── utils/
-│   │   ├── string.ts           # 字符串处理工具（10+ 函数）
-│   │   ├── array.ts            # 数组处理工具（12+ 函数）
-│   │   └── index.ts            # 统一导出
-│   └── demo.ts                 # 演示脚本
-├── tests/
-│   ├── string.test.ts          # 字符串工具测试
-│   └── array.test.ts           # 数组工具测试
-├── package.json
-├── tsconfig.json
-├── vitest.config.ts
-├── eslint.config.mjs
-└── README.md
-```
+- ✅ **Nextra** - 强大的静态站点生成器
+- ✅ **Markdown/MDX** - 支持 Markdown 和 MDX 格式
+- ✅ **代码高亮** - 内置语法高亮
+- ✅ **暗黑模式** - 自动暗黑模式切换
+- ✅ **响应式设计** - 移动端友好
+- ✅ **SEO 优化** - 自动生成 meta 标签
+- ✅ **GitHub Actions** - 自动化 CI/CD
+- 🚧 **Supabase 集成** - 浏览量统计（开发中）
+- 🚧 **自定义域名** - 计划中
 
 ## 快速开始
 
@@ -41,123 +22,167 @@ github-action-test-2/
 npm install
 ```
 
-### 2. 本地开发命令
+### 2. 启动开发服务器
 
 ```bash
-# 运行演示脚本
-npm run demo
+npm run dev
+```
 
-# 运行测试
-npm test
+访问 [http://localhost:3000](http://localhost:3000) 查看博客。
 
-# 运行测试（watch 模式）
-npm run test:watch
+### 3. 构建生产版本
+
+```bash
+npm run build
+npm run start
+```
+
+## 项目结构
+
+```
+my-nextra-blog/
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # GitHub Actions 配置（待更新）
+├── pages/
+│   ├── _app.tsx                # Next.js App 配置
+│   ├── _meta.json              # 导航配置
+│   ├── index.mdx               # 首页
+│   ├── posts/
+│   │   ├── _meta.json          # 文章列表配置
+│   │   ├── first-post.mdx      # 示例文章 1
+│   │   └── github-actions-learning.mdx  # 示例文章 2
+│   └── about.mdx               # 关于页面
+├── public/                      # 静态资源
+├── next.config.mjs             # Next.js 配置
+├── theme.config.tsx            # Nextra 主题配置
+├── tsconfig.json               # TypeScript 配置
+├── package.json                # 项目依赖
+├── plan.md                     # 详细开发计划
+└── README.md                   # 本文件
+```
+
+## 开发指南
+
+### 添加新文章
+
+1. 在 `pages/posts/` 目录下创建新的 `.mdx` 文件：
+
+```bash
+touch pages/posts/my-new-post.mdx
+```
+
+2. 添加 frontmatter 和内容：
+
+```mdx
+---
+title: 文章标题
+date: 2025/01/18
+description: 文章描述
+tag: 标签1, 标签2
+author: 作者名
+---
+
+# 文章标题
+
+文章内容...
+```
+
+3. 更新 `pages/posts/_meta.json`：
+
+```json
+{
+  "my-new-post": "文章标题",
+  "github-actions-learning": "GitHub Actions 学习笔记",
+  "first-post": "我的第一篇博客"
+}
+```
+
+### 自定义主题
+
+编辑 `theme.config.tsx` 来自定义博客主题：
+
+```tsx
+export default {
+  footer: <p>© 2025 我的技术博客</p>,
+  head: ({ title, meta }) => (
+    // 自定义 <head> 内容
+  ),
+  darkMode: true,
+  navs: [
+    // 自定义导航链接
+  ]
+}
+```
+
+## 部署
+
+### 部署到 Vercel（推荐）
+
+#### 方式 1：通过 Vercel Dashboard
+
+1. 访问 [Vercel](https://vercel.com)
+2. 点击 "Import Project"
+3. 连接 GitHub 仓库
+4. Vercel 会自动检测 Next.js 项目并部署
+
+#### 方式 2：通过 GitHub Actions（自动部署）
+
+参考 `plan.md` 文件中的阶段 3 配置 GitHub Actions 自动部署。
+
+### 部署到其他平台
+
+- **Netlify**: 支持 Next.js，需要配置 `netlify.toml`
+- **Cloudflare Pages**: 支持 Next.js，需要配置构建命令
+- **自托管**: 使用 `npm run build && npm run start`
+
+## 下一步计划
+
+按照 `plan.md` 文件继续完成：
+
+- [x] **阶段 1**: 创建 Nextra 博客项目 ✅
+- [ ] **阶段 2**: Vercel 手动部署
+- [ ] **阶段 3**: GitHub Actions 自动部署
+- [ ] **阶段 4**: Supabase 浏览量统计
+- [ ] **阶段 5**: 自定义域名
+- [ ] **阶段 6**: 测试与优化
+
+查看 [plan.md](./plan.md) 了解详细的开发计划。
+
+## 技术栈
+
+- **框架**: [Next.js](https://nextjs.org/) 14
+- **博客引擎**: [Nextra](https://nextra.site/) 3
+- **语言**: TypeScript
+- **部署**: [Vercel](https://vercel.com/)
+- **CI/CD**: GitHub Actions
+- **数据库**: [Supabase](https://supabase.com/)（计划）
+
+## 常用命令
+
+```bash
+# 开发
+npm run dev              # 启动开发服务器
+
+# 构建
+npm run build            # 构建生产版本
+npm run start            # 启动生产服务器
 
 # 代码检查
-npm run lint
-
-# 自动修复代码问题
-npm run lint:fix
-
-# TypeScript 类型检查
-npm run typecheck
-
-# 构建项目
-npm run build
+npm run lint             # 运行 ESLint
 ```
 
-## 工具函数介绍
+## 学习资源
 
-### 字符串工具 (`src/utils/string.ts`)
-
-| 函数 | 说明 | 示例 |
-|------|------|------|
-| `toCamelCase` | 转换为驼峰命名 | `'hello-world'` → `'helloWorld'` |
-| `toSnakeCase` | 转换为蛇形命名 | `'helloWorld'` → `'hello_world'` |
-| `toKebabCase` | 转换为短横线命名 | `'helloWorld'` → `'hello-world'` |
-| `capitalize` | 首字母大写 | `'hello'` → `'Hello'` |
-| `truncate` | 截断字符串 | `truncate('hello world', 8)` → `'hello...'` |
-| `template` | 模板字符串填充 | `template('Hi {name}', {name: 'Alice'})` |
-| `generateUUID` | 生成 UUID v4 | `'550e8400-e29b-...'` |
-| `reverse` | 反转字符串 | `'hello'` → `'olleh'` |
-| `isPalindrome` | 判断是否为回文 | `'racecar'` → `true` |
-| `countOccurrences` | 统计子串出现次数 | `countOccurrences('hello', 'l')` → `2` |
-
-### 数组工具 (`src/utils/array.ts`)
-
-| 函数 | 说明 | 示例 |
-|------|------|------|
-| `unique` | 数组去重 | `[1, 2, 2, 3]` → `[1, 2, 3]` |
-| `chunk` | 数组分块 | `chunk([1,2,3,4,5], 2)` → `[[1,2], [3,4], [5]]` |
-| `flatten` | 数组扁平化 | `[[1, 2], [3]]` → `[1, 2, 3]` |
-| `shuffle` | 洗牌算法 | `[1, 2, 3]` → `[2, 3, 1]`（随机） |
-| `groupBy` | 按属性分组 | 按年龄分组对象数组 |
-| `intersection` | 数组交集 | `[1, 2, 3]` ∩ `[2, 3, 4]` → `[2, 3]` |
-| `difference` | 数组差集 | `[1, 2, 3]` - `[2, 3]` → `[1]` |
-| `sum` | 求和 | `[1, 2, 3, 4, 5]` → `15` |
-| `average` | 求平均值 | `[1, 2, 3, 4, 5]` → `3` |
-| `max` | 求最大值 | `[1, 5, 3, 9, 2]` → `9` |
-| `min` | 求最小值 | `[1, 5, 3, 9, 2]` → `1` |
-| `compact` | 移除假值 | `[0, 1, false, 2, '', 3]` → `[1, 2, 3]` |
-
-## GitHub Actions CI 工作流
-
-当你 `git push` 到 GitHub 时，会自动触发 3 个并行 job：
-
-### Job 1: 🧪 Test & Lint
-- ✅ ESLint 代码检查
-- ✅ TypeScript 类型检查
-- ✅ Vitest 单元测试
-
-### Job 2: 🚀 Run Demo
-- ✅ 运行 `demo.ts` 演示脚本
-- ✅ 在 CI 日志中查看所有工具函数的运行效果
-
-### Job 3: 🏗️ Build
-- ✅ 编译 TypeScript
-- ✅ 上传构建产物到 Artifacts
-
-## GitHub Actions 配置说明
-
-查看 `.github/workflows/ci.yml` 了解详细配置：
-
-- **触发条件**：`push` 和 `pull_request` 到 `main` 或 `master` 分支
-- **运行环境**：`ubuntu-latest`
-- **Node.js 版本**：20
-- **依赖缓存**：自动缓存 npm 依赖，加快构建速度
-
-## 学习重点
-
-这个项目覆盖了 GitHub Actions 的核心概念：
-
-1. ✅ **Workflow**：`.github/workflows/ci.yml` 定义了完整的 CI 流程
-2. ✅ **Event**：监听 `push` 和 `pull_request` 事件
-3. ✅ **Job**：3 个 job（test、demo、build）展示并行和依赖关系
-4. ✅ **Step**：每个 job 包含多个步骤，使用官方 actions 和自定义命令
-5. ✅ **Action**：使用 `actions/checkout`、`actions/setup-node` 等
-
-## 使用示例
-
-```typescript
-import { toCamelCase, chunk, average } from './src/utils/index.js';
-
-// 字符串转换
-const camelCase = toCamelCase('hello-world'); // 'helloWorld'
-
-// 数组分块
-const chunks = chunk([1, 2, 3, 4, 5], 2); // [[1, 2], [3, 4], [5]]
-
-// 求平均值
-const avg = average([1, 2, 3, 4, 5]); // 3
-```
-
-## 下一步学习建议
-
-1. 尝试修改 `.github/workflows/ci.yml`，添加新的 step
-2. 添加定时任务（`schedule` 触发器）
-3. 尝试部署到 GitHub Pages 或其他平台
-4. 探索 GitHub Actions Marketplace 中的其他 actions
+- [Nextra 官方文档](https://nextra.site/)
+- [Next.js 官方文档](https://nextjs.org/docs)
+- [MDX 文档](https://mdxjs.com/)
+- [Vercel 文档](https://vercel.com/docs)
 
 ## License
 
 MIT
+
+---
+
+**Happy Blogging! 🎉**
