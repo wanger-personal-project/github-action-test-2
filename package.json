@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@upstash/redis": "^1.35.6",
     "next": "^14.2.18",
     "nextra": "^3.2.2",
     "nextra-theme-blog": "^3.2.2",
