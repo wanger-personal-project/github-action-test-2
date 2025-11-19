@@ -31,6 +31,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <span style={{ color: '#666' }}>
                 Welcome, {user.author?.display_name || user.email}
               </span>
+              <Link href="/blog/dashboard" style={{ textDecoration: 'none', color: '#666' }}>
+                My Posts
+              </Link>
+              <Link href="/blog/comments" style={{ textDecoration: 'none', color: '#666' }}>
+                Comments
+              </Link>
               <Link href="/blog/new" style={{ textDecoration: 'none', color: '#0070f3' }}>
                 New Post
               </Link>

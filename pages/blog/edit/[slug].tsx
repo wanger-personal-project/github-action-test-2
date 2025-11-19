@@ -18,6 +18,7 @@ export default function EditPost() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { slug } = router.query;
+  const slugString = typeof slug === 'string' ? slug : Array.isArray(slug) ? slug[0] : '';
 
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<Post | null>(null);
@@ -31,26 +32,19 @@ export default function EditPost() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (slug && user) {
+    if (slugString && user) {
       fetchPost();
     }
-  }, [slug, user]);
+  }, [slugString, user]);
 
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/posts/${slug}`);
+      const response = await fetch(`/api/posts/author/${slugString}`);
       if (!response.ok) throw new Error('Post not found');
 
       const data = await response.json();
       const postData = data.post;
-
-      // Check if user is the author
-      if (postData.author_id !== user?.id) {
-        router.push('/');
-        return;
-      }
-
       setPost(postData);
       setTitle(postData.title);
       setNewSlug(postData.slug);
@@ -70,12 +64,18 @@ export default function EditPost() {
     setError('');
     setSubmitting(true);
 
+    if (!post) {
+      setError('Post not loaded yet');
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/posts/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          old_slug: slug,
+          id: post?.id,
           title,
           slug: newSlug,
           content,
@@ -91,7 +91,14 @@ export default function EditPost() {
       }
 
       const data = await response.json();
-      router.push(`/blog/${data.post.slug}`);
+      if (data.post.status === 'published') {
+        router.push(`/blog/${data.post.slug}`);
+      } else {
+        // 仍是草稿，留在编辑页并刷新内容
+        setPost(data.post);
+        setStatus(data.post.status);
+        setNewSlug(data.post.slug);
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {

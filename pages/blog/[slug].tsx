@@ -35,6 +35,7 @@ interface Comment {
 export default function BlogPost() {
   const router = useRouter();
   const { slug } = router.query;
+  const slugString = typeof slug === 'string' ? slug : Array.isArray(slug) ? slug[0] : '';
   const { user } = useAuth();
 
   const [post, setPost] = useState<Post | null>(null);
@@ -43,18 +44,30 @@ export default function BlogPost() {
   const [error, setError] = useState('');
   const [commentText, setCommentText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [viewCount, setViewCount] = useState<number | null>(null);
+  const [likesCount, setLikesCount] = useState(0);
+  const [userLiked, setUserLiked] = useState(false);
+  const [likesLoading, setLikesLoading] = useState(false);
 
   useEffect(() => {
-    if (slug) {
+    if (slugString) {
       fetchPost();
       fetchComments();
+      recordView();
+      fetchViewCount();
     }
-  }, [slug]);
+  }, [slugString]);
+
+  useEffect(() => {
+    if (slugString) {
+      fetchLikes();
+    }
+  }, [slugString, user?.id]);
 
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/posts/${slug}`);
+      const response = await fetch(`/api/posts/${slugString}`);
       if (!response.ok) throw new Error('Post not found');
 
       const data = await response.json();
@@ -68,7 +81,7 @@ export default function BlogPost() {
 
   const fetchComments = async () => {
     try {
-      const response = await fetch(`/api/comments/${slug}`);
+      const response = await fetch(`/api/comments/${slugString}`);
       if (response.ok) {
         const data = await response.json();
         setComments(data.comments);
@@ -78,21 +91,82 @@ export default function BlogPost() {
     }
   };
 
+  const recordView = async () => {
+    try {
+      await fetch(`/api/views/${slugString}`, { method: 'POST' });
+    } catch (err) {
+      console.error('Failed to record view:', err);
+    }
+  };
+
+  const fetchViewCount = async () => {
+    try {
+      const response = await fetch(`/api/views/${slugString}`);
+      if (response.ok) {
+        const data = await response.json();
+        setViewCount(data.views);
+      }
+    } catch (err) {
+      console.error('Failed to fetch views:', err);
+    }
+  };
+
+  const fetchLikes = async () => {
+    try {
+      const query = user?.id ? `?userId=${user.id}` : '';
+      const response = await fetch(`/api/likes/${slugString}${query}`);
+      if (response.ok) {
+        const data = await response.json();
+        setLikesCount(data.likes);
+        setUserLiked(data.userLiked);
+      }
+    } catch (err) {
+      console.error('Failed to fetch likes:', err);
+    }
+  };
+
+  const toggleLike = async () => {
+    if (!user) {
+      router.push(`/auth/login?redirect=${encodeURIComponent(`/blog/${slugString}`)}`);
+      return;
+    }
+
+    try {
+      setLikesLoading(true);
+      const response = await fetch(`/api/likes/${slugString}?userId=${user.id}`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update like');
+      }
+      const data = await response.json();
+      setLikesCount(data.likes);
+      setUserLiked(data.userLiked);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setLikesLoading(false);
+    }
+  };
+
   const handleCommentSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
 
     setSubmitting(true);
     try {
+      if (!post?.id) return;
       const response = await fetch('/api/comments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ post_slug: slug, content: commentText }),
+        body: JSON.stringify({ post_id: post.id, content: commentText }),
       });
 
       if (!response.ok) throw new Error('Failed to post comment');
 
       setCommentText('');
+      alert('Comment submitted! It will appear after the author approves it.');
       fetchComments();
     } catch (err: any) {
       alert(err.message);
@@ -103,12 +177,13 @@ export default function BlogPost() {
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this post?')) return;
+    if (!post?.id) return;
 
     try {
       const response = await fetch('/api/posts/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug }),
+        body: JSON.stringify({ id: post.id }),
       });
 
       if (!response.ok) throw new Error('Failed to delete post');
@@ -162,7 +237,7 @@ export default function BlogPost() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', color: '#666', borderBottom: '1px solid #eaeaea', paddingBottom: '1rem' }}>
           <div>
-            By <strong>{post.author.display_name}</strong> • {formatDate(post.published_at)} • {post.view_count} views
+            By <strong>{post.author.display_name}</strong> • {formatDate(post.published_at)} • {viewCount ?? post.view_count} views
           </div>
           {isAuthor && (
             <div style={{ display: 'flex', gap: '1rem' }}>
@@ -182,6 +257,29 @@ export default function BlogPost() {
                 Delete
               </button>
             </div>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem', alignItems: 'center' }}>
+          <button
+            onClick={toggleLike}
+            disabled={likesLoading}
+            style={{
+              padding: '0.5rem 1.25rem',
+              borderRadius: '999px',
+              border: userLiked ? 'none' : '1px solid #e5e7eb',
+              backgroundColor: userLiked ? '#fee2e2' : '#fff',
+              color: userLiked ? '#b91c1c' : '#111827',
+              cursor: likesLoading ? 'not-allowed' : 'pointer',
+              fontWeight: 600,
+            }}
+          >
+            {userLiked ? '♥ Liked' : '♡ Like'} ({likesCount})
+          </button>
+          {!user && (
+            <span style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+              Login to save your likes.
+            </span>
           )}
         </div>
 

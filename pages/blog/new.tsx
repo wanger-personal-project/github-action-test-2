@@ -39,6 +39,12 @@ export default function NewPost() {
     setError('');
     setSubmitting(true);
 
+    if (!slug.match(/^[a-z0-9-]+$/)) {
+      setError('Slug must contain only lowercase letters, numbers, and hyphens');
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/posts/create', {
         method: 'POST',
@@ -59,7 +65,11 @@ export default function NewPost() {
       }
 
       const data = await response.json();
-      router.push(`/blog/${data.post.slug}`);
+      if (data.post.status === 'published') {
+        router.push(`/blog/${data.post.slug}`);
+      } else {
+        router.push(`/blog/edit/${data.post.slug}`);
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
