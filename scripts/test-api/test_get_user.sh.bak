@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# 获取当前用户信息 API
+# 用法: ./test_get_user.sh <cookie_file>
+
+set -e
+
+BASE_URL="${API_BASE_URL:-http://localhost:3000}"
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <cookie_file>"
+  echo "Example: $0 /tmp/supabase_session_xxx.txt"
+  exit 1
+fi
+
+COOKIE_FILE="$1"
+
+if [ ! -f "$COOKIE_FILE" ]; then
+  echo "Error: Cookie file not found: $COOKIE_FILE"
+  exit 1
+fi
+
+echo "========================================="
+echo "Testing Get User API"
+echo "========================================="
+echo "Using session: $COOKIE_FILE"
+echo ""
+
+curl -X GET "$BASE_URL/api/auth/user" \
+  -b "$COOKIE_FILE" \
+  -w "\n\nHTTP Status: %{http_code}\n" \
+  2>/dev/null | python3 -m json.tool 2>/dev/null || cat
+
+echo ""
+echo "========================================="

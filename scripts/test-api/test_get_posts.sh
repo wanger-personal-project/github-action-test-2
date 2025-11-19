@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# 获取文章列表 API
+# 用法: ./test_get_posts.sh [page] [limit]
+
+set -e
+
+BASE_URL="${API_BASE_URL:-http://localhost:3000}"
+
+PAGE="${1:-1}"
+LIMIT="${2:-10}"
+
+echo "========================================="
+echo "Testing Get Posts API"
+echo "========================================="
+echo "Page: $PAGE"
+echo "Limit: $LIMIT"
+echo ""
+
+curl -X GET "$BASE_URL/api/posts?page=$PAGE&limit=$LIMIT" \
+  -w "\nHTTP_STATUS:%{http_code}" \
+  2>/dev/null
+
+echo ""
+echo "========================================="

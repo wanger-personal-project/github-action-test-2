@@ -31,6 +31,7 @@
 - `@vercel/kv` 是 Vercel 对 Upstash 的封装
 
 **选择建议**：
+
 - 使用 `@upstash/redis` 可以获得更多 Redis 原生功能
 - 本项目使用 `@upstash/redis` ✅
 
@@ -100,10 +101,12 @@ export const redis = Redis.fromEnv();
 **文件**: `pages/api/views/[slug].ts`
 
 **功能**：
+
 - 读取：获取文章浏览次数
 - 写入：增加文章浏览次数
 
 **使用的 Redis 命令**：
+
 - `GET` - 读取计数
 - `INCR` - 原子递增
 
@@ -119,14 +122,15 @@ const views = (await redis.get<number>(redisKey)) || 0;
 return NextResponse.json({
   slug: "first-post",
   views: 100,
-  message: "这篇文章已被浏览 100 次"
+  message: "这篇文章已被浏览 100 次",
 });
 ```
 
 **测试命令**：
+
 ```bash
 # 获取文章浏览次数
-curl http://localhost:3000/api/views/first-post
+curl https://jiaojiaoyuyu.com/api/views/first-post
 
 # 响应示例
 {
@@ -149,14 +153,15 @@ const newViews = await redis.incr(redisKey);
 return NextResponse.json({
   slug: "first-post",
   views: newViews,
-  message: `浏览次数已更新为 ${newViews}`
+  message: `浏览次数已更新为 ${newViews}`,
 });
 ```
 
 **测试命令**：
+
 ```bash
 # 增加浏览次数
-curl -X POST http://localhost:3000/api/views/first-post
+curl -X POST https://jiaojiaoyuyu.com/api/views/first-post
 
 # 响应示例
 {
@@ -166,11 +171,12 @@ curl -X POST http://localhost:3000/api/views/first-post
 }
 
 # 再次增加
-curl -X POST http://localhost:3000/api/views/first-post
+curl -X POST https://jiaojiaoyuyu.com/api/views/first-post
 # views 变为 2
 ```
 
 **关键技术点**：
+
 - ✅ 使用 `INCR` 命令保证原子性
 - ✅ 添加缓存策略（60 秒）减少 Redis 调用
 - ✅ 错误处理和降级策略
@@ -182,10 +188,12 @@ curl -X POST http://localhost:3000/api/views/first-post
 **文件**: `pages/api/likes/[slug].ts`
 
 **功能**：
+
 - 读取：获取点赞数和用户点赞状态
 - 写入：点赞/取消点赞（切换状态）
 
 **使用的 Redis 命令**：
+
 - `GET` - 读取点赞计数
 - `INCR/DECR` - 增加/减少计数
 - `SADD/SREM` - 添加/移除集合元素
@@ -216,14 +224,15 @@ return NextResponse.json({
   slug: "first-post",
   likes: 50,
   userLiked: true,
-  message: "你已点赞，当前共 50 人点赞"
+  message: "你已点赞，当前共 50 人点赞",
 });
 ```
 
 **测试命令**：
+
 ```bash
 # 获取点赞信息
-curl "http://localhost:3000/api/likes/first-post?userId=user123"
+curl "https://jiaojiaoyuyu.com/api/likes/first-post?userId=user123"
 
 # 响应示例
 {
@@ -260,14 +269,15 @@ return NextResponse.json({
   slug: "first-post",
   likes: newLikesCount,
   userLiked: !alreadyLiked,
-  message: "点赞成功！"
+  message: "点赞成功！",
 });
 ```
 
 **测试命令**：
+
 ```bash
 # 第一次点赞
-curl -X POST "http://localhost:3000/api/likes/first-post?userId=user123"
+curl -X POST "https://jiaojiaoyuyu.com/api/likes/first-post?userId=user123"
 
 # 响应
 {
@@ -278,7 +288,7 @@ curl -X POST "http://localhost:3000/api/likes/first-post?userId=user123"
 }
 
 # 再次点赞（取消）
-curl -X POST "http://localhost:3000/api/likes/first-post?userId=user123"
+curl -X POST "https://jiaojiaoyuyu.com/api/likes/first-post?userId=user123"
 
 # 响应
 {
@@ -290,12 +300,14 @@ curl -X POST "http://localhost:3000/api/likes/first-post?userId=user123"
 ```
 
 **关键技术点**：
+
 - ✅ 使用 **Redis Set** 存储点赞用户列表（防止重复）
 - ✅ 使用 **Pipeline** 批量执行命令，减少网络往返
 - ✅ 支持点赞/取消点赞切换
 - ✅ 完整的错误处理
 
 **数据结构**：
+
 ```
 # 点赞计数（String）
 likes:first-post = 50
@@ -311,52 +323,55 @@ likes_users:first-post = {"user123", "user456", "user789"}
 ### 本地测试
 
 1. **启动开发服务器**：
+
 ```bash
 npm run dev
 ```
 
 2. **测试浏览统计**：
+
 ```bash
 # 查看浏览次数
-curl http://localhost:3000/api/views/test-post
+curl https://jiaojiaoyuyu.com/api/views/test-post
 
 # 增加浏览次数
-curl -X POST http://localhost:3000/api/views/test-post
+curl -X POST https://jiaojiaoyuyu.com/api/views/test-post
 
 # 再次查看（次数已增加）
-curl http://localhost:3000/api/views/test-post
+curl https://jiaojiaoyuyu.com/api/views/test-post
 ```
 
 3. **测试点赞功能**：
+
 ```bash
 # 查看点赞状态
-curl "http://localhost:3000/api/likes/test-post?userId=alice"
+curl "https://jiaojiaoyuyu.com/api/likes/test-post?userId=alice"
 
 # 点赞
-curl -X POST "http://localhost:3000/api/likes/test-post?userId=alice"
+curl -X POST "https://jiaojiaoyuyu.com/api/likes/test-post?userId=alice"
 
 # 取消点赞
-curl -X POST "http://localhost:3000/api/likes/test-post?userId=alice"
+curl -X POST "https://jiaojiaoyuyu.com/api/likes/test-post?userId=alice"
 
 # 多个用户点赞
-curl -X POST "http://localhost:3000/api/likes/test-post?userId=bob"
-curl -X POST "http://localhost:3000/api/likes/test-post?userId=charlie"
+curl -X POST "https://jiaojiaoyuyu.com/api/likes/test-post?userId=bob"
+curl -X POST "https://jiaojiaoyuyu.com/api/likes/test-post?userId=charlie"
 
 # 查看总点赞数
-curl "http://localhost:3000/api/likes/test-post?userId=alice"
+curl "https://jiaojiaoyuyu.com/api/likes/test-post?userId=alice"
 ```
 
 ### 验证数据持久化
 
 ```bash
 # 1. 增加浏览次数
-curl -X POST http://localhost:3000/api/views/test-post
+curl -X POST https://jiaojiaoyuyu.com/api/views/test-post
 
 # 2. 重启开发服务器
 # Ctrl+C 停止，然后 npm run dev 重启
 
 # 3. 再次查看（数据仍然存在！）
-curl http://localhost:3000/api/views/test-post
+curl https://jiaojiaoyuyu.com/api/views/test-post
 # 返回：views: 1（没有丢失）
 ```
 
@@ -493,6 +508,7 @@ https://docs.upstash.com/redis/features/restapi#rest---redis-api-compatibility
 ### Q3: 如何在 Vercel Dashboard 查看 Redis 数据？
 
 **A**:
+
 1. Vercel Dashboard → Storage → 你的 Redis 数据库
 2. 点击 **Data Browser**
 3. 可以查看、编辑、删除键值
@@ -524,11 +540,13 @@ clearTestData();
 **A**: 对于个人博客**完全够用**！
 
 Upstash Redis 免费额度（通过 Vercel）：
+
 - **10,000 命令/天**
 - **256 MB 存储**
 - **100 MB 带宽/天**
 
 假设每天 1000 次访问：
+
 - 浏览统计：2000 次命令（GET + POST）
 - 点赞：额外 1000 次命令
 - 总计：3000 次/天
@@ -592,6 +610,7 @@ const data = await redis.get<LikesData>("likes:post1");
 ## 📞 需要帮助？
 
 如果遇到问题：
+
 1. 查看 [Upstash 文档](https://docs.upstash.com)
 2. 查看 [Upstash GitHub Discussions](https://github.com/upstash/issues/discussions)
 3. 联系 Upstash 支持
