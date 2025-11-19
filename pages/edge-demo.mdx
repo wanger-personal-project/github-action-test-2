@@ -1,0 +1,218 @@
+---
+title: Vercel Edge Functions 演示
+date: 2025-01-19
+description: 体验 Vercel Edge Functions 的强大能力
+tags: [vercel, edge-functions, serverless]
+author: 你的名字
+---
+
+# Vercel Edge Functions 演示 🚀
+
+欢迎来到 Edge Functions 体验页面！这里展示了运行在全球边缘节点上的无服务器函数。
+
+## 什么是 Edge Functions？
+
+Edge Functions 运行在离用户最近的边缘节点上，提供：
+- ⚡ **超低延迟** - 毫秒级响应
+- 🌍 **全球分布** - 在离用户最近的位置执行
+- 🔒 **安全可靠** - 自动扩展，无需管理服务器
+
+---
+
+## 🧪 体验功能
+
+### 1. 访客信息 API
+
+查看你的地理位置、IP 地址和浏览器信息。
+
+**API 端点**: `GET /api/visitor-info`
+
+```bash
+# 使用 curl 测试
+curl http://localhost:3000/api/visitor-info
+
+# 或在浏览器中访问
+http://localhost:3000/api/visitor-info
+```
+
+**特点**:
+- 获取实时地理位置（国家、城市、经纬度）
+- 识别访客 IP 和 User Agent
+- 显示边缘节点区域
+
+---
+
+### 2. 文章浏览统计
+
+追踪文章的浏览次数。
+
+**API 端点**:
+- `GET /api/views/[slug]` - 获取浏览次数
+- `POST /api/views/[slug]` - 增加浏览次数
+
+```bash
+# 获取文章浏览次数
+curl http://localhost:3000/api/views/first-post
+
+# 增加浏览次数
+curl -X POST http://localhost:3000/api/views/first-post
+
+# 再次查看，次数已增加
+curl http://localhost:3000/api/views/first-post
+```
+
+**特点**:
+- 动态路由支持任意文章 slug
+- GET 和 POST 方法演示
+- 缓存策略优化
+
+---
+
+### 3. A/B 测试
+
+体验用户分组和流量分割。
+
+**API 端点**: `GET /api/ab-test`
+
+```bash
+# 第一次访问会分配组别
+curl -c cookies.txt http://localhost:3000/api/ab-test
+
+# 后续访问会保持在同一组（通过 cookie）
+curl -b cookies.txt http://localhost:3000/api/ab-test
+```
+
+**特点**:
+- 自动生成唯一用户 ID
+- 50/50 流量分割
+- Cookie 持久化（30 天）
+- 不同组别显示不同内容
+
+---
+
+### 4. 健康检查
+
+监控边缘函数的运行状态。
+
+**API 端点**: `GET /api/health`
+
+```bash
+# 检查系统健康状态
+curl http://localhost:3000/api/health
+```
+
+**返回信息**:
+- 运行状态（healthy/degraded）
+- 边缘节点区域
+- 响应延迟
+- 环境信息
+
+---
+
+## 🛡️ 边缘中间件
+
+所有请求都会经过全局边缘中间件处理（`middleware.ts`），自动添加：
+
+1. **安全响应头**
+   - X-Frame-Options: DENY
+   - X-Content-Type-Options: nosniff
+   - X-XSS-Protection: 1; mode=block
+
+2. **地理位置信息**
+   - X-Visitor-Country: 你的国家
+   - X-Visitor-City: 你的城市
+   - X-Welcome-Message: 根据地区的欢迎语
+
+3. **边缘标识**
+   - X-Edge-Middleware: active
+   - X-Edge-Region: 运行区域
+
+**查看响应头**:
+```bash
+# 查看所有响应头
+curl -I http://localhost:3000
+
+# 查看特定头信息
+curl -I http://localhost:3000 | grep X-
+```
+
+---
+
+## 📊 性能对比
+
+| 指标 | Edge Functions | 传统服务器 |
+|------|---------------|-----------|
+| 冷启动 | < 1ms | 50-500ms |
+| 全球延迟 | 10-50ms | 100-500ms |
+| 自动扩展 | ✅ | ❌ |
+| 地理位置 | 自动获取 | 需要第三方服务 |
+
+---
+
+## 🚀 本地测试
+
+1. 启动开发服务器：
+```bash
+npm run dev
+```
+
+2. 访问演示页面：
+```
+http://localhost:3000/edge-demo
+```
+
+3. 测试各个 API 端点：
+```bash
+# 访客信息
+curl http://localhost:3000/api/visitor-info
+
+# 文章统计
+curl http://localhost:3000/api/views/test-article
+
+# A/B 测试
+curl http://localhost:3000/api/ab-test
+
+# 健康检查
+curl http://localhost:3000/api/health
+```
+
+---
+
+## 📝 技术细节
+
+所有边缘函数都使用以下配置：
+
+```typescript
+export const config = {
+  runtime: "edge",  // 声明为边缘运行时
+};
+```
+
+**限制**:
+- 执行时间：最长 30 秒
+- 内存：128MB
+- 不支持 Node.js API（使用 Web 标准 API）
+
+**优势**:
+- 全球分布式执行
+- 自动获取地理位置
+- 超快冷启动
+- 无需管理服务器
+
+---
+
+## 🔗 相关资源
+
+- [Vercel Edge Functions 官方文档](https://vercel.com/docs/functions/edge-functions)
+- [Next.js Edge Runtime](https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes)
+- [Web API 标准](https://developer.mozilla.org/en-US/docs/Web/API)
+
+---
+
+## 💡 下一步
+
+1. 部署到 Vercel 查看真实的全球边缘节点效果
+2. 集成 Vercel KV 实现持久化存储
+3. 添加更多实际应用场景（认证、限流等）
+
+**准备好体验了吗？** 运行 `npm run dev` 开始测试！
