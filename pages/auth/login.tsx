@@ -3,6 +3,10 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Layout from '../../components/Layout';
 import { useAuth } from '../../contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageShell } from '@/components/ui/page-shell';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -29,81 +33,58 @@ export default function Login() {
 
   return (
     <Layout>
-      <div style={{ maxWidth: '400px', margin: '3rem auto' }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '2rem', textAlign: 'center' }}>Login</h1>
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {error && (
-            <div style={{ padding: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px', color: '#c00' }}>
-              {error}
-            </div>
-          )}
-
-          <div>
-            <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: '0.75rem',
-              backgroundColor: loading ? '#ccc' : '#0070f3',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontWeight: '500'
-            }}
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-
-          <p style={{ textAlign: 'center', color: '#666' }}>
-            Don't have an account?{' '}
-            <Link href="/auth/signup" style={{ color: '#0070f3' }}>
-              Sign up
-            </Link>
-          </p>
-        </form>
-      </div>
+      <PageShell className="flex min-h-[70vh] items-center justify-center">
+        <Card className="w-full max-w-md border border-border/80 shadow-xl shadow-muted/60">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold tracking-tight">Welcome back</CardTitle>
+            <CardDescription>Sign in to publish new stories and manage comments.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="mb-4 rounded-xl border border-destructive/30 bg-red-50 px-4 py-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-muted-foreground">
+                  Email address
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium text-muted-foreground">
+                  Password
+                </label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Signing in...' : 'Sign in'}
+              </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Don't have an account?{' '}
+                <Link href="/auth/signup" className="font-semibold text-foreground underline-offset-4 hover:underline">
+                  Create one
+                </Link>
+              </p>
+            </form>
+          </CardContent>
+        </Card>
+      </PageShell>
     </Layout>
   );
 }

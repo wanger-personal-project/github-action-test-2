@@ -3,6 +3,10 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Layout from '../../components/Layout';
 import { useAuth } from '../../contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageShell } from '@/components/ui/page-shell';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -38,130 +42,85 @@ export default function Signup() {
 
   return (
     <Layout>
-      <div style={{ maxWidth: '400px', margin: '3rem auto' }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '2rem', textAlign: 'center' }}>Sign Up</h1>
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {error && (
-            <div style={{ padding: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px', color: '#c00' }}>
-              {error}
-            </div>
-          )}
-
-          <div>
-            <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="username" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value.toLowerCase())}
-              required
-              placeholder="john-doe"
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-            <small style={{ color: '#666', fontSize: '0.85rem' }}>
-              Lowercase letters, numbers, and hyphens only
-            </small>
-          </div>
-
-          <div>
-            <label htmlFor="displayName" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Display Name
-            </label>
-            <input
-              id="displayName"
-              type="text"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              required
-              placeholder="John Doe"
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-            <small style={{ color: '#666', fontSize: '0.85rem' }}>
-              At least 6 characters
-            </small>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: '0.75rem',
-              backgroundColor: loading ? '#ccc' : '#0070f3',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontWeight: '500'
-            }}
-          >
-            {loading ? 'Creating account...' : 'Sign Up'}
-          </button>
-
-          <p style={{ textAlign: 'center', color: '#666' }}>
-            Already have an account?{' '}
-            <Link href="/auth/login" style={{ color: '#0070f3' }}>
-              Login
-            </Link>
-          </p>
-        </form>
-      </div>
+      <PageShell className="flex min-h-[70vh] items-center justify-center">
+        <Card className="w-full max-w-md border border-border/80 shadow-xl shadow-muted/60">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold tracking-tight">Join FlowPress</CardTitle>
+            <CardDescription>Publish essays, manage drafts, and connect with your readers.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="mb-4 rounded-xl border border-destructive/30 bg-red-50 px-4 py-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-muted-foreground">
+                  Email address
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="writer@flowpress.com"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="username" className="text-sm font-medium text-muted-foreground">
+                  Username
+                </label>
+                <Input
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                  placeholder="alex-journal"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">Lowercase letters, numbers & hyphens only.</p>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="displayName" className="text-sm font-medium text-muted-foreground">
+                  Display name
+                </label>
+                <Input
+                  id="displayName"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="Alex Journal"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium text-muted-foreground">
+                  Password
+                </label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  minLength={6}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">Minimum 6 characters.</p>
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Creating account...' : 'Create account'}
+              </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Already have an account?{' '}
+                <Link href="/auth/login" className="font-semibold text-foreground underline-offset-4 hover:underline">
+                  Sign in
+                </Link>
+              </p>
+            </form>
+          </CardContent>
+        </Card>
+      </PageShell>
     </Layout>
   );
 }

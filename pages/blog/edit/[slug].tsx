@@ -2,6 +2,12 @@ import { useState, FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../../components/Layout';
 import { useAuth } from '../../../contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageShell } from '@/components/ui/page-shell';
+
 
 interface Post {
   id: string;
@@ -109,7 +115,9 @@ export default function EditPost() {
   if (authLoading || loading) {
     return (
       <Layout>
-        <p>Loading...</p>
+        <PageShell>
+          <p className="text-muted-foreground">Loading...</p>
+        </PageShell>
       </Layout>
     );
   }
@@ -122,204 +130,125 @@ export default function EditPost() {
   if (error || !post) {
     return (
       <Layout>
-        <p style={{ color: 'red' }}>Error: {error || 'Post not found'}</p>
+        <PageShell>
+          <div className="rounded-xl border border-destructive/30 bg-red-50 px-4 py-3 text-sm text-destructive">
+            {error || 'Post not found'}
+          </div>
+        </PageShell>
       </Layout>
     );
   }
 
   return (
     <Layout>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '2rem' }}>Edit Post</h1>
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {error && (
-            <div style={{ padding: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px', color: '#c00' }}>
-              {error}
-            </div>
-          )}
-
-          <div>
-            <label htmlFor="title" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Title *
-            </label>
-            <input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="slug" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Slug *
-            </label>
-            <input
-              id="slug"
-              type="text"
-              value={newSlug}
-              onChange={(e) => setNewSlug(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-            <small style={{ color: '#666', fontSize: '0.85rem' }}>
-              URL-friendly identifier (lowercase, numbers, and hyphens only)
-            </small>
-          </div>
-
-          <div>
-            <label htmlFor="excerpt" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Excerpt
-            </label>
-            <textarea
-              id="excerpt"
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-              rows={3}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                resize: 'vertical'
-              }}
-            />
-            <small style={{ color: '#666', fontSize: '0.85rem' }}>
-              Short description for preview
-            </small>
-          </div>
-
-          <div>
-            <label htmlFor="coverImageUrl" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Cover Image URL
-            </label>
-            <input
-              id="coverImageUrl"
-              type="url"
-              value={coverImageUrl}
-              onChange={(e) => setCoverImageUrl(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="content" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Content *
-            </label>
-            <textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              required
-              rows={15}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                fontFamily: 'monospace',
-                resize: 'vertical'
-              }}
-            />
-            <small style={{ color: '#666', fontSize: '0.85rem' }}>
-              HTML content is supported
-            </small>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Status
-            </label>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input
-                  type="radio"
-                  value="draft"
-                  checked={status === 'draft'}
-                  onChange={(e) => setStatus('draft')}
+      <PageShell className="space-y-6">
+        <div className="flex flex-col gap-2">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Edit mode</p>
+          <h1 className="text-3xl font-semibold tracking-tight">Refine your story</h1>
+          <p className="max-w-2xl text-sm text-muted-foreground">
+            Update content, change cover art, or adjust publishing state. All changes save instantly on publish.
+          </p>
+        </div>
+        <Card className="border border-border/60 shadow-lg">
+          <CardHeader>
+            <CardTitle>Article metadata</CardTitle>
+            <CardDescription>Keep the core details accurate so your readers can discover it.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="mb-4 rounded-xl border border-destructive/40 bg-red-50 px-4 py-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="grid gap-6">
+              <div className="grid gap-2">
+                <label htmlFor="title" className="text-sm font-medium text-muted-foreground">
+                  Title
+                </label>
+                <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="slug" className="text-sm font-medium text-muted-foreground">
+                  Slug
+                </label>
+                <Input
+                  id="slug"
+                  value={newSlug}
+                  onChange={(e) => setNewSlug(e.target.value)}
+                  required
                 />
-                Draft
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input
-                  type="radio"
-                  value="published"
-                  checked={status === 'published'}
-                  onChange={(e) => setStatus('published')}
+                <p className="text-xs text-muted-foreground">Lowercase letters, numbers, and hyphens only.</p>
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="excerpt" className="text-sm font-medium text-muted-foreground">
+                  Excerpt
+                </label>
+                <Textarea
+                  id="excerpt"
+                  value={excerpt}
+                  onChange={(e) => setExcerpt(e.target.value)}
+                  rows={3}
                 />
-                Published
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input
-                  type="radio"
-                  value="archived"
-                  checked={status === 'archived'}
-                  onChange={(e) => setStatus('archived')}
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="coverImage" className="text-sm font-medium text-muted-foreground">
+                  Cover image URL
+                </label>
+                <Input
+                  id="coverImage"
+                  type="url"
+                  value={coverImageUrl}
+                  onChange={(e) => setCoverImageUrl(e.target.value)}
                 />
-                Archived
-              </label>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button
-              type="submit"
-              disabled={submitting}
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: submitting ? '#ccc' : '#0070f3',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                cursor: submitting ? 'not-allowed' : 'pointer',
-                fontWeight: '500'
-              }}
-            >
-              {submitting ? 'Updating...' : 'Update Post'}
-            </button>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#fff',
-                color: '#333',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                cursor: 'pointer',
-                fontWeight: '500'
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="content" className="text-sm font-medium text-muted-foreground">
+                  Body
+                </label>
+                <Textarea
+                  id="content"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  rows={15}
+                  className="font-mono"
+                  required
+                />
+              </div>
+              <div className="grid gap-3">
+                <p className="text-sm font-medium text-muted-foreground">Status</p>
+                <div className="flex flex-wrap gap-3">
+                  {['draft', 'published', 'archived'].map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setStatus(option as typeof status)}
+                      className={`rounded-2xl border px-4 py-2 text-sm font-medium transition ${
+                        status === option
+                          ? 'border-slate-900 bg-slate-900 text-white'
+                          : 'border-border text-muted-foreground'
+                      }`}
+                    >
+                      {option === 'draft'
+                        ? 'Draft'
+                        : option === 'published'
+                        ? 'Published'
+                        : 'Archived'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? 'Saving changes...' : 'Update post'}
+                </Button>
+                <Button variant="secondary" type="button" onClick={() => router.back()}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </PageShell>
     </Layout>
   );
 }

@@ -3,6 +3,11 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Layout from '../../components/Layout';
 import { useAuth } from '../../contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { PageShell } from '@/components/ui/page-shell';
+import { Textarea } from '@/components/ui/textarea';
 
 interface CommentItem {
   id: string;
@@ -130,211 +135,159 @@ export default function CommentsModeration() {
   if (authLoading || !user) {
     return (
       <Layout>
-        <p>Loading...</p>
+        <PageShell>
+          <p className="text-muted-foreground">Loading…</p>
+        </PageShell>
       </Layout>
     );
   }
 
-  const formatDate = (value: string) => {
-    return new Date(value).toLocaleString();
-  };
-
-  const renderStatusTag = (status: CommentItem['status']) => {
-    const colors: Record<CommentItem['status'], string> = {
-      pending: '#f59e0b',
-      approved: '#10b981',
-      rejected: '#ef4444',
-      spam: '#6b7280',
-    };
-    return (
-      <span
-        style={{
-          padding: '0.2rem 0.65rem',
-          borderRadius: '999px',
-          backgroundColor: `${colors[status]}1A`,
-          color: colors[status],
-          fontSize: '0.8rem',
-          fontWeight: 600,
-        }}
-      >
-        {status}
-      </span>
-    );
-  };
-
   return (
     <Layout>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
-        <div>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Comment Moderation</h1>
-          <p style={{ color: '#666' }}>Review and approve comments from your readers.</p>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
-        {STATUS_FILTERS.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => handleStatusChange(option.value)}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '999px',
-              border: option.value === statusFilter ? 'none' : '1px solid #e5e7eb',
-              backgroundColor: option.value === statusFilter ? '#111827' : '#fff',
-              color: option.value === statusFilter ? '#fff' : '#374151',
-              cursor: 'pointer',
-            }}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          placeholder="Filter by post slug"
-          value={postSlugFilter}
-          onChange={(e) => {
-            setPagination((prev) => ({ ...prev, page: 1 }));
-            setPostSlugFilter(e.target.value);
-          }}
-          style={{
-            padding: '0.6rem 0.75rem',
-            borderRadius: '6px',
-            border: '1px solid #d1d5db',
-            minWidth: '240px',
-          }}
-        />
-      </div>
-
-      {error && (
-        <div style={{ padding: '1rem', backgroundColor: '#fee2e2', borderRadius: '6px', color: '#b91c1c', marginBottom: '1.5rem' }}>
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <p>Loading comments...</p>
-      ) : comments.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', border: '1px dashed #d1d5db', borderRadius: '8px' }}>
-          <p>No comments match your filters.</p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {comments.map((comment) => (
-            <div
-              key={comment.id}
-              style={{
-                border: '1px solid #e5e7eb',
-                borderRadius: '10px',
-                padding: '1.25rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.75rem',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <strong>{comment.author.display_name || comment.author.username}</strong>
-                  <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>{formatDate(comment.created_at)}</div>
-                </div>
-                {renderStatusTag(comment.status)}
-              </div>
-              <div style={{ backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px', whiteSpace: 'pre-wrap' }}>
-                {comment.content}
-              </div>
-              <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>
-                On article:{' '}
-                <Link href={`/blog/${comment.post.slug}`} style={{ color: '#0070f3' }}>
-                  {comment.post.title}
-                </Link>
-                {` (${comment.post.slug})`}
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <button
-                  onClick={() => handleModerate(comment.id, 'approved')}
-                  disabled={actionLoading === comment.id}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    border: 'none',
-                    backgroundColor: '#10b981',
-                    color: '#fff',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {actionLoading === comment.id ? 'Updating...' : 'Approve'}
-                </button>
-                <button
-                  onClick={() => handleModerate(comment.id, 'rejected')}
-                  disabled={actionLoading === comment.id}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    border: 'none',
-                    backgroundColor: '#ef4444',
-                    color: '#fff',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Reject
-                </button>
-                <button
-                  onClick={() => handleModerate(comment.id, 'spam')}
-                  disabled={actionLoading === comment.id}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    border: 'none',
-                    backgroundColor: '#6b7280',
-                    color: '#fff',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Mark as Spam
-                </button>
-              </div>
+      <PageShell className="space-y-8">
+        <div className="rounded-3xl border border-border/40 bg-gradient-to-r from-white via-white to-muted/50 p-8 shadow-xl">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Comments</p>
+              <h1 className="mt-3 text-3xl font-semibold tracking-tight">Keep the conversation high quality</h1>
+              <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+                Approve insightful replies, reject noise, and flag spam across all of your stories.
+              </p>
             </div>
-          ))}
+            <div className="w-full max-w-sm">
+              <label className="text-xs font-medium text-muted-foreground">Filter by slug</label>
+              <Textarea
+                value={postSlugFilter}
+                onChange={(e) => {
+                  setPagination((prev) => ({ ...prev, page: 1 }));
+                  setPostSlugFilter(e.target.value);
+                }}
+                rows={1}
+                className="mt-2 h-10 resize-none"
+                placeholder="mcp-verification-article"
+              />
+            </div>
+          </div>
         </div>
-      )}
 
-      {pagination.totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
-          <button
-            onClick={() => handlePageChange(pagination.page - 1)}
-            disabled={pagination.page === 1}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
-              backgroundColor: pagination.page === 1 ? '#f3f4f6' : '#fff',
-              cursor: pagination.page === 1 ? 'not-allowed' : 'pointer',
-            }}
-          >
-            Previous
-          </button>
-          <span style={{ padding: '0.5rem 1rem' }}>
-            Page {pagination.page} of {pagination.totalPages}
-          </span>
-          <button
-            onClick={() => handlePageChange(pagination.page + 1)}
-            disabled={pagination.page === pagination.totalPages}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
-              backgroundColor:
-                pagination.page === pagination.totalPages ? '#f3f4f6' : '#fff',
-              cursor:
-                pagination.page === pagination.totalPages ? 'not-allowed' : 'pointer',
-            }}
-          >
-            Next
-          </button>
-        </div>
-      )}
+        <Card className="border border-border/60 shadow-lg">
+          <CardHeader>
+            <CardTitle>Reviews queue</CardTitle>
+            <CardDescription>Select a status bucket to process feedback faster.</CardDescription>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {STATUS_FILTERS.map((option) => (
+                <Badge
+                  key={option.value}
+                  variant={option.value === statusFilter ? 'default' : 'outline'}
+                  className="cursor-pointer"
+                  onClick={() => handleStatusChange(option.value)}
+                >
+                  {option.label}
+                </Badge>
+              ))}
+            </div>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="mb-4 rounded-xl border border-destructive/30 bg-red-50 px-4 py-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+            {loading ? (
+              <div className="py-10 text-center text-sm text-muted-foreground">Loading comments…</div>
+            ) : comments.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border py-14 text-center text-sm text-muted-foreground">
+                No comments match your filters.
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {comments.map((comment) => (
+                  <Card key={comment.id} className="border border-border/60">
+                    <CardHeader className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <CardTitle className="text-base font-semibold">{comment.author.display_name}</CardTitle>
+                        <CardDescription>{new Date(comment.created_at).toLocaleString()}</CardDescription>
+                      </div>
+                      <Badge
+                        variant={
+                          comment.status === 'approved'
+                            ? 'success'
+                            : comment.status === 'pending'
+                            ? 'secondary'
+                            : comment.status === 'rejected'
+                            ? 'destructive'
+                            : 'outline'
+                        }
+                      >
+                        {comment.status}
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <p className="rounded-2xl bg-muted p-4 text-sm text-foreground">
+                        {comment.content}
+                      </p>
+                      <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground">
+                        <span>
+                          On article:{' '}
+                          <Link href={`/blog/${comment.post.slug}`} className="font-medium text-foreground underline-offset-4 hover:underline">
+                            {comment.post.title}
+                          </Link>
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleModerate(comment.id, 'approved')}
+                            disabled={actionLoading === comment.id}
+                          >
+                            {actionLoading === comment.id ? 'Updating…' : 'Approve'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleModerate(comment.id, 'rejected')}
+                            disabled={actionLoading === comment.id}
+                          >
+                            Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleModerate(comment.id, 'spam')}
+                            disabled={actionLoading === comment.id}
+                          >
+                            Mark spam
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+            {pagination.totalPages > 1 && (
+              <div className="mt-6 flex items-center justify-center gap-4 text-sm">
+                <Button
+                  variant="secondary"
+                  disabled={pagination.page === 1}
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                >
+                  Previous
+                </Button>
+                <span>
+                  Page {pagination.page} of {pagination.totalPages}
+                </span>
+                <Button
+                  variant="secondary"
+                  disabled={pagination.page === pagination.totalPages}
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </PageShell>
     </Layout>
   );
 }

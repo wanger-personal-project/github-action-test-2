@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app'
 import 'nextra-theme-blog/style.css'
+import '../styles/global.css'
 import { AuthProvider } from '../contexts/AuthContext'
 
 export default function App({ Component, pageProps }: AppProps) {

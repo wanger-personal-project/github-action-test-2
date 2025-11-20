@@ -2,6 +2,12 @@ import { useState, FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
 import { useAuth } from '../../contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageShell } from '@/components/ui/page-shell';
+import { Badge } from '@/components/ui/badge';
 
 export default function NewPost() {
   const { user, loading } = useAuth();
@@ -80,7 +86,9 @@ export default function NewPost() {
   if (loading) {
     return (
       <Layout>
-        <p>Loading...</p>
+        <PageShell>
+          <p className="text-muted-foreground">Loading...</p>
+        </PageShell>
       </Layout>
     );
   }
@@ -91,188 +99,125 @@ export default function NewPost() {
 
   return (
     <Layout>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '2rem' }}>Create New Post</h1>
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {error && (
-            <div style={{ padding: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px', color: '#c00' }}>
-              {error}
-            </div>
-          )}
-
-          <div>
-            <label htmlFor="title" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Title *
-            </label>
-            <input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="slug" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Slug *
-            </label>
-            <input
-              id="slug"
-              type="text"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-            <small style={{ color: '#666', fontSize: '0.85rem' }}>
-              URL-friendly identifier (lowercase, numbers, and hyphens only)
-            </small>
-          </div>
-
-          <div>
-            <label htmlFor="excerpt" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Excerpt
-            </label>
-            <textarea
-              id="excerpt"
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-              rows={3}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                resize: 'vertical'
-              }}
-            />
-            <small style={{ color: '#666', fontSize: '0.85rem' }}>
-              Short description for preview
-            </small>
-          </div>
-
-          <div>
-            <label htmlFor="coverImageUrl" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Cover Image URL
-            </label>
-            <input
-              id="coverImageUrl"
-              type="url"
-              value={coverImageUrl}
-              onChange={(e) => setCoverImageUrl(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="content" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Content *
-            </label>
-            <textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              required
-              rows={15}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                fontFamily: 'monospace',
-                resize: 'vertical'
-              }}
-            />
-            <small style={{ color: '#666', fontSize: '0.85rem' }}>
-              HTML content is supported
-            </small>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Status
-            </label>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input
-                  type="radio"
-                  value="draft"
-                  checked={status === 'draft'}
-                  onChange={(e) => setStatus('draft')}
+      <PageShell className="space-y-6">
+        <div className="flex flex-col gap-3">
+          <Badge variant="outline" className="w-fit uppercase tracking-[0.3em] text-xs">
+            Writing studio
+          </Badge>
+          <h1 className="text-3xl font-semibold tracking-tight">Compose a new article</h1>
+          <p className="max-w-2xl text-sm text-muted-foreground">
+            Draft, preview, and publish long-form essays with live view analytics and audience interactions.
+          </p>
+        </div>
+        <Card className="border border-border/60 shadow-lg">
+          <CardHeader>
+            <CardTitle>Story details</CardTitle>
+            <CardDescription>Set the essentials of your post before publishing.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="mb-4 rounded-xl border border-destructive/40 bg-red-50 px-4 py-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="grid gap-6">
+              <div className="grid gap-2">
+                <label htmlFor="title" className="text-sm font-medium text-muted-foreground">
+                  Title
+                </label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  placeholder="Designing delightful reading experiences"
+                  required
                 />
-                Draft
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input
-                  type="radio"
-                  value="published"
-                  checked={status === 'published'}
-                  onChange={(e) => setStatus('published')}
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="slug" className="text-sm font-medium text-muted-foreground">
+                  Slug
+                </label>
+                <Input
+                  id="slug"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  placeholder="designing-reading-experiences"
+                  required
                 />
-                Published
-              </label>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button
-              type="submit"
-              disabled={submitting}
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: submitting ? '#ccc' : '#0070f3',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                cursor: submitting ? 'not-allowed' : 'pointer',
-                fontWeight: '500'
-              }}
-            >
-              {submitting ? 'Creating...' : 'Create Post'}
-            </button>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#fff',
-                color: '#333',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                cursor: 'pointer',
-                fontWeight: '500'
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+                <p className="text-xs text-muted-foreground">
+                  Lowercase letters, numbers, and hyphens only.
+                </p>
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="excerpt" className="text-sm font-medium text-muted-foreground">
+                  Excerpt
+                </label>
+                <Textarea
+                  id="excerpt"
+                  value={excerpt}
+                  onChange={(e) => setExcerpt(e.target.value)}
+                  rows={3}
+                  placeholder="A short synopsis that appears in list views."
+                />
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="coverImage" className="text-sm font-medium text-muted-foreground">
+                  Cover image URL
+                </label>
+                <Input
+                  id="coverImage"
+                  type="url"
+                  value={coverImageUrl}
+                  onChange={(e) => setCoverImageUrl(e.target.value)}
+                  placeholder="https://images.unsplash.com/..."
+                />
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="content" className="text-sm font-medium text-muted-foreground">
+                  Body
+                </label>
+                <Textarea
+                  id="content"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  rows={14}
+                  className="font-mono"
+                  placeholder="Write your story using Markdown or HTML snippets."
+                  required
+                />
+                <p className="text-xs text-muted-foreground">HTML content is supported.</p>
+              </div>
+              <div className="grid gap-3">
+                <p className="text-sm font-medium text-muted-foreground">Status</p>
+                <div className="flex flex-wrap gap-3">
+                  {['draft', 'published'].map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setStatus(option as 'draft' | 'published')}
+                      className={`rounded-2xl border px-4 py-2 text-sm font-medium transition ${
+                        status === option
+                          ? 'border-slate-900 bg-slate-900 text-white'
+                          : 'border-border text-muted-foreground'
+                      }`}
+                    >
+                      {option === 'draft' ? 'Draft mode' : 'Publish immediately'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? 'Creating...' : status === 'draft' ? 'Save draft' : 'Publish now'}
+                </Button>
+                <Button type="button" variant="secondary" onClick={() => router.back()}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </PageShell>
     </Layout>
   );
 }
